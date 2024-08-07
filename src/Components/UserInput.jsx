@@ -10,7 +10,7 @@ export default function UserInput(props){
     return (
         <>
             <label htmlFor={props.htmlFor}>{props.text}</label> <br/>
-            <Input type={props.type} id={props.id} placeholder={props.placeholder}/>
+            <Input type={props.type} value={props.value} id={props.id} placeholder={props.placeholder}/>
         </>
     );
 }
