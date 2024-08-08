@@ -8,3 +8,7 @@
 li{
     list-style: none;
 }
+.errorMsg{
+    color:red;
+    margin-top:-1.3rem;
+}
