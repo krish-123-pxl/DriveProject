@@ -1,10 +1,10 @@
 import styled from "styled-components";
 import UserInput from "./UserInput";
 import LoginButton from "./Button";
-import { Eye, User } from "lucide-react";
-import { useRef,useState } from "react";
+import { Eye } from "lucide-react";
+import {  useState } from "react";
+import Loader from './Loader'
 import RandomPassword from "./GenerateRandomPassword";
-
 
 
 const Form = styled.div`
@@ -27,91 +27,88 @@ const Form = styled.div`
             
         }
     `;
-    const PasswordBox = styled.div`
+const PasswordBox = styled.div`
         position:relative;
-
-
         `;
-    const SpanEle = styled.span`
+const SpanEle = styled.span`
             position:absolute;
             top:30px;
             right:10px;
         `;
-    const InputBox = styled.div`
+const InputBox = styled.div`
         margin-bottom:13px;
     `;
-    const BottomBox = styled.div`
+const BottomBox = styled.div`
         display:flex;
         justify-content:center;
         align-items:center;
         margin-block:20px;
     `;
 
+export default function FormControls(props) {
 
-export default function FormControls() {
-
-    const [isClicked,setIsClicked] = useState(false);
-    const [error,setError] = useState({});
-    const [errorFlag,setErrorFlag] = useState(false);
-    const [data,setData] = useState({
-        name:'',
-        email:'',
-        password:''
+    const [isClicked, setIsClicked] = useState(false);
+    const [error, setError] = useState({});
+    const [errorFlag, setErrorFlag] = useState(false);
+    const [data, setData] = useState({
+        name: '',
+        email: '',
+        password: ''
     });
+    const [msg, setMsg] = useState('');
+    const [status, setStatus] = useState(false);
 
-    const handleInputChange = (e)=>{
-        const { name,value } = e.target;
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
         setData({
             ...data,
-            [name]:value
+            [name]: value
         });
     };
-
 
     const handlePassword = (e) => {
         e.preventDefault();
         let pass = RandomPassword();
         setData({
             ...data,
-            password:pass
+            password: pass
         })
     }
-    const handlePasswordVisibility = ()=>{
+    const handlePasswordVisibility = () => {
         setIsClicked(!isClicked);
-    // console.log(loginBtnRef.current.innerText);
     }
-
-    const validateData = ()=>{
-        if(!errorFlag){
-            if(data.name == ""){
+    const newError = {};
+    const validateData = () => {
+        if (!errorFlag) {
+            if (data.name == "") {
                 newError.name = "name can't be empty !";
                 setErrorFlag(false);
             }
-            else if(!isNaN(data.name)){
+            else if (!isNaN(data.name)) {
                 newError.email = "name can't be a digit !";
                 setErrorFlag(false);
             }
-            else{
+            else {
                 newError.email = "";
                 setErrorFlag(true);
             }
-            if(data.email == ""){
+            if (data.email == "") {
                 newError.email = "please enter an email";
                 setErrorFlag(false);
             }
-            else if(!data.email.includes('@')){
+            else if (!data.email.includes('@')) {
                 newError.email = "'@' symbol is missing";
                 setErrorFlag(false);
             }
-            else{
+            else {
                 newError.email = "";
                 setErrorFlag(true);
             }
-            if(data.password == "" || data.password.length < 8 ){
+            if (data.password == "" || data.password.length < 8) {
                 newError.password = "please enter minimum 8 characters !"
                 setErrorFlag(false);
             }
-            else{
+            else {
                 newError.password = "";
                 setErrorFlag(true);
             }
@@ -119,16 +116,15 @@ export default function FormControls() {
         }
     }
 
-    const loginBtnRef = useRef();
-    const newError = {};
-    const handleSubmitRequest = ()=>{
-        
+
+    const handleSubmitRequest = () => {
+
         validateData();
 
-        if(errorFlag){
+        if (errorFlag) {
             const formdata = new FormData();
-            formdata.append("name",data.name);
-            formdata.append("email",data.email);
+            formdata.append("name", data.name);
+            formdata.append("email", data.email);
             formdata.append("password", data.password);
 
             const requestOptions = {
@@ -136,32 +132,35 @@ export default function FormControls() {
                 body: formdata,
                 redirect: "follow"
             };
-            loginBtnRef.current.innerText = "Please wait..";
+            setStatus(true);
 
             fetch("http://localhost/stpdrive/api/user/create.php", requestOptions)
-            .then((response) => {
-                response.text();
-            })
-            .then((result) => {
-                console.log(result);
-                loginBtnRef.current.innerText = "Login Now !";
-            })
-            .catch((error) => console.error(error));
-
-            setData({
-                ...data,
-                name:'',
-                email:'',
-                password:''
-            });
-
+                .then((response) => {
+                    return response.json();
+                })
+                .then((result) => {
+                    if (result.message == "sent") {
+                        console.log("sent")
+                        props.setEmail(data.email);
+                        props.setTabs({ signUp: false, activationForm: true });
+                    }
+                    if(result.message == "present"){
+                        setStatus(false);
+                        setMsg("Email Allready Registered !");
+                    }
+                    else{
+                        setStatus(false);
+                        setMsg("Registration failed");
+                    }
+                })
+                .catch((error) => {console.error(error)
+                    setStatus(false)
+                });
         }
     }
 
-
-    
     return (
-        <Form  autoComplete="off">
+        <Form autoComplete="off">
             <h2>Sign Up</h2>
             <InputBox>
                 <UserInput name="name" onChange={handleInputChange} value={data.name} type="text" htmlFor="name" id="name" placeholder="Enter Name:" text="Name:" />
@@ -171,15 +170,15 @@ export default function FormControls() {
                 <UserInput name="email" onChange={handleInputChange} value={data.email} type="text" htmlFor="email" id="email" placeholder="Enter Email id:" text="Email:" /><p className="errorMsg">{error.email}</p>
             </InputBox>
             <PasswordBox>
-                <UserInput onChange={handleInputChange} name="password" type={isClicked?"text":"password"} value={data.password} htmlFor="password" id="password" placeholder="Enter Password:" text="Password:" /><p className="errorMsg">{error.password}</p>
-                <SpanEle><Eye style={{cursor:'pointer'}} onClick={handlePasswordVisibility} /></SpanEle>
+                <UserInput onChange={handleInputChange} name="password" type={isClicked ? "text" : "password"} value={data.password} htmlFor="password" id="password" placeholder="Enter Password:" text="Password:" /><p className="errorMsg">{error.password}</p>
+                <SpanEle><Eye style={{ cursor: 'pointer' }} onClick={handlePasswordVisibility} /></SpanEle>
             </PasswordBox>
-            <BottomBox>
+            <BottomBox style={{justifyContent:'space-between'}}>
                 <p>Form better security Click <strong>Generate</strong></p>
                 <LoginButton style={{ backgroundColor: '#ff4242' }} onClick={handlePassword}>Generate</LoginButton>
             </BottomBox>
-            <BottomBox><LoginButton ref={loginBtnRef} onClick={handleSubmitRequest} style={{ width: '60%' }}>Login Now !</LoginButton></BottomBox>
+            <BottomBox>{status?<Loader/>:<LoginButton disabled={status?true:false} onClick={handleSubmitRequest} style={{ width: '60%'}}>Login Now !</LoginButton>}</BottomBox>
+            {status?'':<h3 style={{color:'red',textAlign:'center'}}>{msg}</h3>}
         </Form>
-
     );
 }
