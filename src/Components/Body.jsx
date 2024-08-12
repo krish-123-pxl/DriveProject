@@ -3,6 +3,7 @@ import styled from "styled-components";
 import SignupForm from "./SignupForm.jsx";
 import img from "../assets/bg.jpg";
 import ActivateAccountForm from "./ActivateAccountForm.jsx";
+import LoginForm from "./LoginForm.jsx";
 
 export default function Body(){
     // const [email,setEmail] = useState("");
@@ -20,14 +21,15 @@ export default function Body(){
 
     const [email,setEmail] = useState('');
 
-    const [tabs,setTabs] = useState({signUp:true,activationForm:false})
-    console.log(tabs);
+    const [tabs,setTabs] = useState({signUp:true,activationForm:false,login:false});
+    // console.log(tabs);
     
     return (
         <>
         <BodyContainer>
           {tabs.signUp&&  <SignupForm setTabs={setTabs} tabs={tabs} setEmail={setEmail} />}
-            {tabs.activationForm&&<ActivateAccountForm email={email}/>}
+            {tabs.activationForm&&<ActivateAccountForm setTabs={setTabs} email={email}/>}
+            {tabs.login && <LoginForm setTabs={setTabs} setEmail={setEmail}/>}
         </BodyContainer>
             
         </>

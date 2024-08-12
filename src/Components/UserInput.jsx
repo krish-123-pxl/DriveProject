@@ -5,7 +5,7 @@ const Input = styled.input`
     width:100%;
     padding:7px;
     margin-bottom:20px;
-`;
+`; 
 export default function UserInput(props){
     return (
         <>
