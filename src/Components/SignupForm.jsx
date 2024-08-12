@@ -5,6 +5,7 @@ import { Eye } from "lucide-react";
 import {  useState } from "react";
 import Loader from './Loader'
 import RandomPassword from "./GenerateRandomPassword";
+import SignUpFun from "../utils/SignUpFun";
 
 
 const Form = styled.div`
@@ -116,46 +117,10 @@ export default function FormControls(props) {
         }
     }
 
-
     const handleSubmitRequest = () => {
-
         validateData();
-
         if (errorFlag) {
-            const formdata = new FormData();
-            formdata.append("name", data.name);
-            formdata.append("email", data.email);
-            formdata.append("password", data.password);
-
-            const requestOptions = {
-                method: "POST",
-                body: formdata,
-                redirect: "follow"
-            };
-            setStatus(true);
-
-            fetch("http://localhost/stpdrive/api/user/create.php", requestOptions)
-                .then((response) => {
-                    return response.json();
-                })
-                .then((result) => {
-                    if (result.message == "sent") {
-                        console.log("sent")
-                        props.setEmail(data.email);
-                        props.setTabs({ signUp: false, activationForm: true });
-                    }
-                    if(result.message == "present"){
-                        setStatus(false);
-                        setMsg("Email Allready Registered !");
-                    }
-                    else{
-                        setStatus(false);
-                        setMsg("Registration failed");
-                    }
-                })
-                .catch((error) => {console.error(error)
-                    setStatus(false)
-                });
+            SignUpFun(data.name,data.email,data.password,setStatus,setMsg,props.setEmail,props.setTabs);
         }
     }
 
@@ -180,5 +145,6 @@ export default function FormControls(props) {
             <BottomBox>{status?<Loader/>:<LoginButton disabled={status?true:false} onClick={handleSubmitRequest} style={{ width: '60%'}}>Login Now !</LoginButton>}</BottomBox>
             {status?'':<h3 style={{color:'red',textAlign:'center'}}>{msg}</h3>}
         </Form>
+        
     );
 }

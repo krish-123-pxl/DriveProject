@@ -27,7 +27,7 @@ export default function Body(){
     return (
         <>
         <BodyContainer>
-          {tabs.signUp&&  <SignupForm setTabs={setTabs} tabs={tabs} setEmail={setEmail} />}
+          {tabs.signUp && <SignupForm setTabs={setTabs} tabs={tabs} setEmail={setEmail} />}
             {tabs.activationForm&&<ActivateAccountForm setTabs={setTabs} email={email}/>}
             {tabs.login && <LoginForm setTabs={setTabs} setEmail={setEmail}/>}
         </BodyContainer>

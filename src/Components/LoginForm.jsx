@@ -3,8 +3,7 @@ import styled from 'styled-components';
 import UserInput from './UserInput';
 import { Eye } from "lucide-react";
 import LoginButton from './Button';
-
-
+import LoginFun from '../utils/LoginFun';
 
 const Form = styled.div`
         width:36%;
@@ -17,7 +16,6 @@ const Form = styled.div`
         background-color:#fff;
         border-radius:7px;
         
-    
         h2{
             text-align:center;
         }
@@ -34,11 +32,11 @@ const SpanEle = styled.span`
 const PasswordBox = styled.div`
         position:relative;
         `;
-        const LoginForm = (props) => {
-    const [data, setData] = useState({
+    const LoginForm = (props) => {
+        const [data, setData] = useState({
         email: '',
         password: ''
-    })
+        })
     const handleChange = (e) => {
         const { name, value } = e.target;
         setData({
@@ -53,44 +51,7 @@ const PasswordBox = styled.div`
     const [logedIn,setLogedIn] = useState(false);
 
     const handleClick = () => {
-        const formdata = new FormData();
-        formdata.append("email", data.email);
-        formdata.append("password", data.password);
-
-        const requestOptions = {
-            method: "POST",
-            body: formdata,
-            redirect: "follow"
-        };
-
-        fetch(`http://localhost/stpdrive/api/user/login.php?email=${data.email}&password=${data.password}`, requestOptions)
-            .then((response) => response.json())
-            .then((result) => {
-                // console.log(result.message);
-                if(result.message == "notfound"){
-                    setMsgFlag(true);
-                    setMsg("Email Not Registered !");
-                }
-                else if(result.message == "wrong"){
-                    setMsgFlag(true);
-                    setMsg("Wrong Password !");
-                }
-                else if(result.message == "pending"){
-                    setMsgFlag(true);
-                    setMsg("Account Not Activated !");
-                    setTimeout(() => {
-                        {props.setTabs({signUp:false,activationForm:true,login:false})}
-                    }, 1200);
-                }
-                else if(result.message == "active"){
-                    setMsgFlag(false);
-                    setLogedIn(true);
-                    setMsg("login Successfully !");
-
-                    // redirection here
-                }
-            })
-            .catch((error) => console.error(error));
+        LoginFun(data.email,data.password,setMsgFlag,setMsg,setLogedIn,props.setTabs);
     }
     return (
         <Form>
