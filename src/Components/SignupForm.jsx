@@ -7,7 +7,6 @@ import Loader from './Loader'
 import RandomPassword from "./GenerateRandomPassword";
 import SignUpFun from "../utils/SignUpFun";
 
-
 const Form = styled.div`
         width:36%;
         box-shadow:0px 0px 6px #ccc;
@@ -19,7 +18,6 @@ const Form = styled.div`
         background-color:#fff;
         border-radius:7px;
         
-    
         h2{
             text-align:center;
         }
@@ -117,15 +115,28 @@ export default function FormControls(props) {
         }
     }
 
-    const handleSubmitRequest = () => {
+    const handleSubmitRequest = async() => {
         validateData();
         if (errorFlag) {
-            SignUpFun(data.name,data.email,data.password,setStatus,setMsg,props.setEmail,props.setTabs);
+            setStatus(true);
+            const response = await SignUpFun(data.name,data.email,data.password);
+            console.log(response);
+            setStatus(false);
+            if(response.message == "sent"){
+                props.setEmail(response.email);
+                props.setTabs({signUp:false,activationForm:true,login:false});
+            }
+            else if(response.message == "present"){
+                setMsg("Email Allready Registered !");
+            }
+            else{
+                setMsg("Registration Failed !");
+            }
         }
     }
 
     return (
-        <Form autoComplete="off">
+        <Form>
             <h2>Sign Up</h2>
             <InputBox>
                 <UserInput name="name" onChange={handleInputChange} value={data.name} type="text" htmlFor="name" id="name" placeholder="Enter Name:" text="Name:" />
@@ -145,6 +156,5 @@ export default function FormControls(props) {
             <BottomBox>{status?<Loader/>:<LoginButton disabled={status?true:false} onClick={handleSubmitRequest} style={{ width: '60%'}}>Login Now !</LoginButton>}</BottomBox>
             {status?'':<h3 style={{color:'red',textAlign:'center'}}>{msg}</h3>}
         </Form>
-        
     );
 }

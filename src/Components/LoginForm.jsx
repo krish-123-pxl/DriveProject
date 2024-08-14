@@ -50,8 +50,23 @@ const PasswordBox = styled.div`
     const [msg, setMsg] = useState('');
     const [logedIn,setLogedIn] = useState(false);
 
-    const handleClick = () => {
-        LoginFun(data.email,data.password,setMsgFlag,setMsg,setLogedIn,props.setTabs);
+    const handleClick = async () => {
+        const response = await LoginFun(data.email,data.password);
+        if(response.message == "notfound"){
+            setLogedIn(false);
+            setMsgFlag(true);
+            setMsg("Email not Registered !");
+        }
+        else if(response.message == "wrong"){
+            setLogedIn(false);
+            setMsgFlag(true);
+            setMsg("Wrong Password!");
+        }
+        else{
+            setMsgFlag(false);
+            setLogedIn(true);
+            setMsg("Login Successfully");
+        }
     }
     return (
         <Form>

@@ -1,33 +1,25 @@
-const ActivationFun = (email,actCode,setStatus,setErrorStatus,setMsg,setTabs) =>{
+const ActivationFun = async (email, actCode) => {
+    const API_URL = "http://localhost/stpdrive/api/user/check_act_code.php";
     const formdata = new FormData();
-        formdata.append("email", email);
-        formdata.append("code", actCode);
-console.log("ok")
-        const requestOptions = {
-            method: "POST",
-            body: formdata,
-            redirect: "follow"
-        };
+    formdata.append("email", email);
+    formdata.append("code", actCode);
 
-        fetch(`http://localhost/stpdrive/api/user/check_act_code.php?email=${email}&code=${actCode}`, requestOptions)
-            .then((response) => response.json())
-            .then((result) => {
-                // console.log(result.message);
-                if(result.message == "activated"){
-                    setStatus(true);
-                    setErrorStatus(false);
-                    setMsg("Account Activated");
-                    setTimeout(() => {
-                        {setTabs({signUp:false,activationForm:false,login:true})}
-                    }, 1200);
-                }
-                else if(result.message == "invalid"){
-                    setErrorStatus(true);
-                    setStatus(false);
-                    setMsg("Invalid Code");
-                }
-                
-            })
-            .catch((error) => {console.error(error)})
+    const requestOptions = {
+        method: "POST",
+        body: formdata,
+        redirect: "follow"
+    };
+    let obj = {};
+    await fetch(`${API_URL}?email=${email}&code=${actCode}`, requestOptions)
+        .then((response) => {
+            return response.json();
+        })
+        .then((result) => {
+            obj = result;
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+    return obj;
 }
 export default ActivationFun;

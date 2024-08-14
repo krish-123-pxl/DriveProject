@@ -28,9 +28,21 @@ export default function ActivateAccountForm(props) {
     const handleChange = (e) => {
         setActCode(e.target.value);
     }
-    const handleActivation = () => {
-        // console.log(props.email);
-        ActivationFun(props.email,actCode,setStatus,setErrorStatus,setMsg,props.setTabs);
+    const handleActivation = async () => {
+        const response = await ActivationFun(props.email,actCode);
+        if(response.message == "invalid"){
+            setStatus(false);
+            setErrorStatus(true);
+            setMsg("Invalid code");
+        }
+        else{
+            setErrorStatus(false);
+            setStatus(true);
+            setMsg("Account Activated");
+            setTimeout(() => {
+                props.setTabs({signUp:false,activationForm:false,login:true});
+            }, 1200);
+        }
     }
 
     return (
