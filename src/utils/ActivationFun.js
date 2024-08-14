@@ -2,7 +2,7 @@ const ActivationFun = (email,actCode,setStatus,setErrorStatus,setMsg,setTabs) =>
     const formdata = new FormData();
         formdata.append("email", email);
         formdata.append("code", actCode);
-
+console.log("ok")
         const requestOptions = {
             method: "POST",
             body: formdata,
